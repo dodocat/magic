@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# Copy the contents of the X clipboard into
+# the specified file.
+#
+# This makes it crap loads easier to make new commands from scripts.
+#
+# Perhaps make it automagically +x if the first script line is
+# #/bin/*
+#
+#
+
+hflag=
+aflag=
+xflag=
+
+while getopts 'ha:x:' OPTION
+do
+case $OPTION in
+h) hflag=1 ;;
+
+a) aflag=1
+aval="$OPTARG" ;;
+
+x) xflag=1
+xval="$OPTARG" ;;
+
+?) printf "Usage: %s: [-x filename] [-a filename] or use -h to recieve help\n"
+exit 1 ;;
+esac
+done
+
+shift $(($OPTIND - 1))
+
+if [ "$hflag" ]
+then
+printf "Clip2file provides an easy method to create a file from the X clipboard\n"
+printf "as either a text file, or make the file executable as a bash script.\n\n"
+printf "-x filename ......... Create the file, then set the execute bit.\n"
+printf "-a filename ......... Create the file but do not set execute.\n\n"
+exit 1
+fi
+
+if [ "$xflag" ]
+then
+xclip -selection clipboard -o > "$xval"
+chmod +x "$xval"
+mv "$xval" $HOME/bin/
+fi
+
+if [ "$aflag" ]
+then
+xclip -selection clipboard -o > "$aval"
+fi
+
+exit 0
+
+
